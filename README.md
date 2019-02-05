@@ -4,12 +4,12 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
 
 ## Team Members
 
-| Name                         | Udacity Mail        |
-|------------------------------|---------------------|
-| Emin Oguz Inci (Team Leader) | eoguzinci@gmail.com |
-| Nick Caldwell                |                     |
-| Tim Papenfuss                |                     |
-| Pravin Reddy                 |                     |
+| Name                         | Udacity Mail          |
+|------------------------------|-----------------------|
+| Emin Oguz Inci (Team Leader) | eoguzinci@gmail.com   |
+| Nick Caldwell                |                       |
+| Tim Papenfuss                |                       |
+| Pravin Reddy                 | pravfremont@gmail.com |
 
 ## Installation
 
