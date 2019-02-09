@@ -69,8 +69,8 @@ class WaypointUpdater(object):
         closest_idx = self.waypoint_tree.query([x,y],1)[1]
 
         # Check if the closest point is ahead or behind the vehicle
-        closest_coord = self.waypoint_2d[closest_idx]
-        prev_coord = self.waypoint_2d[closest_idx-1]
+        closest_coord = self.waypoints_2d[closest_idx]
+        prev_coord = self.waypoints_2d[closest_idx-1]
 
         # Equation for hyperplane through closest coord
         cl_vec = np.array(closest_coord)
@@ -90,12 +90,12 @@ class WaypointUpdater(object):
         final_lane = self.generate_lane()
         self.final_waypoints_pub.publish(final_lane)
 
-    def generate_lane():
+    def generate_lane(self):
         lane = Lane()
 
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
-        base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
+        base_waypoints = self.base_waypoints[closest_idx:farthest_idx]
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
