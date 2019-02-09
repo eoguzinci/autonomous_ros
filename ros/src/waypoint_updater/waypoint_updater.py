@@ -11,16 +11,12 @@ import math
 
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
-
 As mentioned in the doc, you should ideally first implement a version which does not care
 about traffic lights or obstacles.
-
 Once you have created dbw_node, you will update this node to use the status of traffic lights too.
-
 Please note that our simulator also provides the exact location of traffic lights and their
 current status in `/vehicle/traffic_lights` message. You can use this message to build this node
 as well as to verify your TL classifier.
-
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
@@ -50,6 +46,7 @@ class WaypointUpdater(object):
         self.base_waypoints = None
         self.waypoints_2d = None
         self.waypoint_tree = None
+        self.stopline_wp_idx = -1
 
         # rospy.spin()
         self.loop() # This gives us control on the publishing frequency
@@ -57,7 +54,7 @@ class WaypointUpdater(object):
     def loop(self):
         rate = rospy.Rate(50) # publishing freq = 50Hz
         while not rospy.is_shutdown():
-            if not None in (self.pose, self.base_waypoints, self.waypoints_2d, self.waypoint_tree):
+            if self.pose and self.base_waypoints:
                 # # Get closest waypoint
                 # closest_waypoint_idx = self.get_closest_waypoint_idx()
                 # self.publish_waypoints(closest_waypoint_idx)
@@ -96,7 +93,7 @@ class WaypointUpdater(object):
 
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
-        base_waypoints = self.base_waypoints[closest_idx:farthest_idx]
+        base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
@@ -162,4 +159,4 @@ if __name__ == '__main__':
     try:
         WaypointUpdater()
     except rospy.ROSInterruptException:
-        rospy.logerr('Could not start waypoint updater node.')
+rospy.logerr('Could not start waypoint updater node.')
