@@ -159,4 +159,4 @@ if __name__ == '__main__':
     try:
         WaypointUpdater()
     except rospy.ROSInterruptException:
-rospy.logerr('Could not start waypoint updater node.')
+        rospy.logerr('Could not start waypoint updater node.')
