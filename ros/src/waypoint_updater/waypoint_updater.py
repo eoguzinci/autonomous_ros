@@ -2,7 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped
-from styx_msgs.msg import Lane, Waypoint
+from styx_msgs.msg import Lane, Waypoint, TrafficLight, TrafficLightArray
 from std_msgs.msg import Int32
 from scipy.spatial import KDTree
 import numpy as np
@@ -26,16 +26,20 @@ MAX_DECEL = 0.6
 
 class WaypointUpdater(object):
     def __init__(self):
+
         rospy.init_node('waypoint_updater')
 
         # Current position of the vehicle, provided by the simulator or localization. [geometry_msgs/PoseStamped]
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
+        self.current_pose_sub = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
 
         # Waypoints as provided by a static .csv file [styx_msgs/Lane]
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        self.base_waypoints_sub = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
-        rospy.Subscriber('/traffic_waypoint',Int32, self.traffic_cb)
+        self.traffic_waypoint_sub = rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+
+        # simulator also provides the exact location of traffic lights and their current status in `/vehicle/traffic_lights` message.
+        self.traffic_lights_sub = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.gt_traffic_cb)
 
         # This is a subset of /base_waypoints. [styx_msgs/Lane]
         # The first waypoint is the one in /base_waypoints which is closest to the car.
@@ -48,6 +52,7 @@ class WaypointUpdater(object):
         self.waypoint_tree = None
         self.stopline_wp_idx = -1
 
+        self.traffic_lights  = []
         # rospy.spin()
         self.loop() # This gives us control on the publishing frequency
 
@@ -135,6 +140,7 @@ class WaypointUpdater(object):
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
         self.stopline_wp_idx = msg.data
+        # rospy.logwarn("traffic_cb: {0}".format(self.stopline_wp_idx))
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
@@ -154,6 +160,9 @@ class WaypointUpdater(object):
             wp1 = i
         return dist
 
+    def gt_traffic_cb(self, msg):
+        self.traffic_lights = msg.lights
+        # rospy.logwarn("gt_traffic_cb: {0}".format(self.traffic_lights))
 
 if __name__ == '__main__':
     try:

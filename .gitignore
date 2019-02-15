@@ -3,4 +3,15 @@
 build
 devel
 
+#dbw_test.py
+dbw_test.rosbag.bag
+brakes.csv
+steers.csv
+throttles.csv
+
+.idea/
+cmake-build-debug/
+
+
+
 profile.tmp
