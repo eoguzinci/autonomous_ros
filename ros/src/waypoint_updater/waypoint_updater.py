@@ -39,7 +39,7 @@ class WaypointUpdater(object):
         self.traffic_waypoint_sub = rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
 
         # simulator also provides the exact location of traffic lights and their current status in `/vehicle/traffic_lights` message.
-        self.traffic_lights_sub = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.gt_traffic_cb)
+        #self.traffic_lights_sub = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.gt_traffic_cb)
 
         # This is a subset of /base_waypoints. [styx_msgs/Lane]
         # The first waypoint is the one in /base_waypoints which is closest to the car.
@@ -140,7 +140,7 @@ class WaypointUpdater(object):
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
         self.stopline_wp_idx = msg.data
-        # rospy.logwarn("traffic_cb: {0}".format(self.stopline_wp_idx))
+        #rospy.loginfo("traffic_cb: {0}".format(self.stopline_wp_idx))
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
