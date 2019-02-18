@@ -8,11 +8,13 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from light_classification.tl_classifier import TLClassifier
 from scipy.spatial import KDTree
+import math
 import tf
 import cv2
 import yaml
 
-STATE_COUNT_THRESHOLD = 3
+STATE_COUNT_THRESHOLD = 3 # how many times light state must be stable before publishing.
+LIGHT_DISTANCE_THRESHOLD = 60 # at how many meters to light waypoint we start checking light state.
 
 class TLDetector(object):
     def __init__(self):
@@ -21,6 +23,7 @@ class TLDetector(object):
         self.pose = None
         self.waypoints = None
         self.camera_image = None
+        self.camera_image_count = 1
         self.lights = []
 
         self.waypoint_tree = None
@@ -63,10 +66,11 @@ class TLDetector(object):
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
             self.waypoint_tree = KDTree(self.waypoints_2d)
-            rospy.logwarn(self.waypoint_tree)
+            #rospy.logwarn(self.waypoint_tree)
 
     def traffic_cb(self, msg):
         self.lights = msg.lights
+        #rospy.loginfo("tl_detector::traffic_cb: {0}".format(self.lights))
 
     def image_cb(self, msg):
         """Identifies red lights in the incoming camera image and publishes the index
@@ -76,27 +80,34 @@ class TLDetector(object):
             msg (Image): image from car-mounted camera
 
         """
-        self.has_image = True
-        self.camera_image = msg
-        light_wp, state = self.process_traffic_lights()
-
-        '''
-        Publish upcoming red lights at camera frequency.
-        Each predicted state has to occur `STATE_COUNT_THRESHOLD` number
-        of times till we start using it. Otherwise the previous stable state is
-        used.
-        '''
-        if self.state != state:
-            self.state_count = 0
-            self.state = state
-        elif self.state_count >= STATE_COUNT_THRESHOLD:
-            self.last_state = self.state
-            light_wp = light_wp if state == TrafficLight.RED else -1
-            self.last_wp = light_wp
-            self.upcoming_red_light_pub.publish(Int32(light_wp))
+        # only process every n-th image to improve performance.
+        if self.camera_image_count < 10:
+            self.camera_image_count += 1
+            self.has_image      = False
+            self.camera_image   = None
         else:
-            self.upcoming_red_light_pub.publish(Int32(self.last_wp))
-        self.state_count += 1
+            self.camera_image_count = 1
+            self.has_image      = True
+            self.camera_image   = msg
+            light_wp, state = self.process_traffic_lights()
+
+            '''
+            Publish upcoming red lights at camera frequency.
+            Each predicted state has to occur `STATE_COUNT_THRESHOLD` number
+            of times till we start using it. Otherwise the previous stable state is
+            used.
+            '''
+            if self.state != state:
+                self.state_count = 0
+                self.state = state
+            elif self.state_count >= STATE_COUNT_THRESHOLD:
+                self.last_state = self.state
+                light_wp = light_wp if state == TrafficLight.RED else -1
+                self.last_wp = light_wp
+                self.upcoming_red_light_pub.publish(Int32(light_wp))
+            else:
+                self.upcoming_red_light_pub.publish(Int32(self.last_wp))
+            self.state_count += 1
 
     def get_closest_waypoint(self, x, y):
         """Identifies the closest path waypoint to the given position
@@ -133,6 +144,10 @@ class TLDetector(object):
 
         # #Get classification
         # return self.light_classifier.get_classification(cv_image)
+        
+    def euclidian_distance(self, position1, position2):
+        x, y, z = position1.x - position2.x, position1.y - position2.y, position1.z - position2.z
+        return math.sqrt(x*x + y*y + z*z)
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
@@ -163,13 +178,16 @@ class TLDetector(object):
                     diff = d
                     closest_light = light
                     line_wp_idx = temp_wp_idx
-
-        if closest_light:
-            state = self.get_light_state(closest_light)
+        
+        # check the distance from car to closest_light
+        closest_light_distance = self.euclidian_distance(self.pose.pose.position, self.waypoints.waypoints[line_wp_idx].pose.pose.position)        
+        
+        if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
+            state = self.get_light_state(closest_light)  # approaching a light, try to determine its state
+            rospy.loginfo("approaching %s traffic light %f ahead", state, closest_light_distance)
             return line_wp_idx, state
-
-        self.waypoints = None
-        return -1, TrafficLight.UNKNOWN
+        else: # far away from light, hence state is don't care.
+            return -1, TrafficLight.UNKNOWN
 
 if __name__ == '__main__':
     try:

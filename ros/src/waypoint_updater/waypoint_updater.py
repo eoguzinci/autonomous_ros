@@ -20,7 +20,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
 MAX_DECEL = 0.6
 
 
@@ -39,7 +39,7 @@ class WaypointUpdater(object):
         self.traffic_waypoint_sub = rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
 
         # simulator also provides the exact location of traffic lights and their current status in `/vehicle/traffic_lights` message.
-        self.traffic_lights_sub = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.gt_traffic_cb)
+        #self.traffic_lights_sub = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.gt_traffic_cb)
 
         # This is a subset of /base_waypoints. [styx_msgs/Lane]
         # The first waypoint is the one in /base_waypoints which is closest to the car.
@@ -57,7 +57,7 @@ class WaypointUpdater(object):
         self.loop() # This gives us control on the publishing frequency
 
     def loop(self):
-        rate = rospy.Rate(50) # publishing freq = 50Hz
+        rate = rospy.Rate(30) # publishing freq = 30Hz
         while not rospy.is_shutdown():
             if self.pose and self.base_waypoints:
                 # # Get closest waypoint
@@ -140,7 +140,7 @@ class WaypointUpdater(object):
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
         self.stopline_wp_idx = msg.data
-        # rospy.logwarn("traffic_cb: {0}".format(self.stopline_wp_idx))
+        #rospy.loginfo("traffic_cb: {0}".format(self.stopline_wp_idx))
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
