@@ -10,6 +10,7 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
 | Nick Caldwell                | nick.caldwell94@gmail.com |
 | Tim Papenfuss                | tim_papenfuss@yahoo.com |
 | Pravin Reddy                 | pravfremont@gmail.com |
+| Aleksei Shpilman             | alexey@shpilman.com |
 
 ## Installation
 
