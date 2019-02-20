@@ -67,4 +67,7 @@ class Controller(object):
             brake = abs(decel)* (self.vehicle_mass + self.fuel_capacity * GAS_DENSITY)*self.wheel_radius # Torque Nm
 
         return throttle, brake, steering
+
+    def reset(self):
+        self.throttle_controller.reset()
     
