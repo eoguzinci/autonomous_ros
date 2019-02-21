@@ -7,11 +7,11 @@ We use an [implementation](https://github.com/pierluigiferrari/ssd_keras) of the
 
 ### Network architecture
 
-![alt text](https://github.com/AShpilman/autonomous_ros/blob/master/imgs/SSD.jpg)
+<img src="/imgs/SSD.jpg" width="800">
 
 SSD network needs an input image and ground truth boxes for each object for training. It evaluates default boxes of different aspect ratios at each location in several feature maps with different scales and predicts the shape offsets and the confidence for all classes in boxes.
 
-![alt text](https://github.com/AShpilman/autonomous_ros/blob/master/imgs/SSD2.png)
+<img src="/imgs/SSD2.png" width="800">
 
 SSD network model adds several feature layers to the end of a base network, which predict the offsets to default boxes of different scales and aspect ratios and their associated confidences.
 
@@ -26,7 +26,24 @@ We then trained the network on Lara and Bosh traffic light datasets.
 * [Lara Traffic Lights Recognition dataset](http://www.lara.prd.fr/benchmarks/trafficlightsrecognition) includes 11 179 640x480 frames
 * [Bosch Small Traffic Lights Dataset](https://hci.iwr.uni-heidelberg.de/node/6132) consists of 1342 images at a resolution 1280x720 pixels and contains about 24000 annotated traffic lights.
 
-We downsampled all images to 600 by 800 pixels and trained the network for 14 epochs using Adam optimizer with learning rate of 0.001. Model is saved to 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'.
+We downsampled all images to 600 by 800 pixels and trained the network for 14 epochs using Adam optimizer with learning rate of 0.001. 
+Model is saved to 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'.
+
+Model trained quite well:
+
+<img src="/imgs/ssd7_sim_3lights_20epochs.png" width="600">
+
+This picture shows the output of the model on sample image:
+
+<img src="/imgs/ssd7_low_conf_red_light_output.png" width="800">
+
+We then filter bounding boxes by confidence threshold to detect green:
+
+<img src="/imgs/ssd7_green_light_output.png" width="800">
+
+or, more importantly, red lights:
+
+<img src="/imgs/ssd7_red_light_output.png" width="800">
 
 ### ROS integration
 
@@ -39,8 +56,7 @@ weights_path = 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'
 self.model.load_weights(weights_path, by_name=True)
 ```
 
-
-* Use model to classify red lights from the incoming images. 
+* Use the model to classify red lights from the incoming images. 
 
 ```
 with graph.as_default():
@@ -53,13 +69,11 @@ y_pred_decoded = decode_detections(y_pred,
                                    normalize_coords=self.normalize_coords,
                                    img_height=self.img_height,
                                    img_width=self.img_width)
+```
 
-if len(y_pred_decoded[0]) == 0:
-    return TrafficLight.UNKNOWN
+* Find the best average class and if it's red - return TrafficLight.RED state
 
-if len(y_pred_decoded[0][0]) == 0:
-    return TrafficLight.UNKNOWN
-
+```
 top3_green_avg = np.average(np.sort(y_pred_decoded[0][list(y_pred_decoded[0][:, 0] == 1), 1])[-3:])
 top3_red_avg = np.average(np.sort(y_pred_decoded[0][list(y_pred_decoded[0][:, 0] == 2), 1])[-3:])
 top3_yellow_avg = np.average(np.sort(y_pred_decoded[0][list(y_pred_decoded[0][:, 0] == 3), 1])[-3:])
@@ -70,7 +84,9 @@ if best_avg == 2:
     return TrafficLight.RED
 ```
 
-* Publish upcoming red lights at camera frequency. 
+* Publish upcoming red lights at camera frequency.
+
+We publish upcoming red light if we observe it for 3 states (STATE_COUNT_THRESHOLD is set to 3)
 
 ```
 if self.state != state:
@@ -86,9 +102,8 @@ else:
 self.state_count += 1
 ```
 
-STATE_COUNT_THRESHOLD is set to 3.
 
-* Check the distance from the car to closest light.
+* Check the distance from the car to closest light to see whether or not closer that LIGHT_DISTANCE_THRESHOLD (set to 60).
 
 ```
 if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
@@ -97,7 +112,6 @@ if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
     return line_wp_idx, state
 ```
 
-LIGHT_DISTANCE_THRESHOLD is set to 60.
 
 ### Testing
 
