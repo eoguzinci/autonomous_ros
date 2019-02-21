@@ -6,13 +6,15 @@ from keras import backend as K
 from keras.models import load_model
 from keras.preprocessing import image
 from keras.optimizers import Adam
-from imageio import imread
+#from imageio import imread
 import numpy as np
 from matplotlib import pyplot as plt
 import tensorflow as tf
 from models.keras_ssd7 import build_model
 from keras_loss_function.keras_ssd_loss import SSDLoss
 from ssd_encoder_decoder.ssd_output_decoder import decode_detections, decode_detections_fast
+
+import cv2
 
 class TLClassifier(object):
     def __init__(self, on_sim):
@@ -84,7 +86,9 @@ class TLClassifier(object):
 
         """
         input_images = []
-        input_images.append(img)
+	b,g,r = cv2.split(img)
+	rbg_img = cv2.merge([r,g,b])
+        input_images.append(rbg_img)
         input_images = np.array(input_images)
 
         with graph.as_default():
