@@ -12,6 +12,12 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
 | Pravin Reddy                 | pravfremont@gmail.com |
 | Aleksei Shpilman             | alexey@shpilman.com |
 
+## Documentation
+
+This readme explains the installation and usage steps.
+
+Documentation for the implemented Traffic Light Detection and Classification methods can be found [here](/TLD.md).
+
 ## Installation
 
 Please use **one** of the two installation options, either native **or** docker installation.
