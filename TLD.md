@@ -3,12 +3,7 @@
 This document describes the traffic light detection and classification modules that we have implemented.
 
 ### General approach
-We use and implementation of Single-Shot MultiBox Detector (SSD) from https://github.com/pierluigiferrari/ssd_keras that we finetune to our task.
-
-It is trained to detect the RED lights only... otherwise returns UNKNOWN
-and is correct the vast majority of the time
-
-possible next steps...
+We use an [implementation](https://github.com/pierluigiferrari/ssd_keras) of the Single-Shot MultiBox Detector (SSD) that we finetune to our task.
 
 ### Network architecture
 
@@ -20,47 +15,49 @@ SSD network needs an input image and ground truth boxes for each object for trai
 
 SSD network model adds several feature layers to the end of a base network, which predict the offsets to default boxes of different scales and aspect ratios and their associated confidences.
 
-*Images are from the original paper* - https://arxiv.org/pdf/1512.02325.pdf
+*Images are from the [original paper](https://arxiv.org/pdf/1512.02325.pdf)*
 
-### Implementation
+### Implementation and training
 
 First, we had to port SSD keras implementation from Python3 to Python2.
+
+We then trained the network on Lara and Bosh traffic light datasets.
+
+* [Lara Traffic Lights Recognition dataset](http://www.lara.prd.fr/benchmarks/trafficlightsrecognition) include 11 179 640x480 frames
+* [Bosch Small Traffic Lights Dataset](https://hci.iwr.uni-heidelberg.de/node/6132) consists of 1342 images at a resolution 1280x720 pixels and contains about 24000 annotated traffic lights.
+
+We trained the network to detect RED traffic lights only (otherwise returns UNKNOWN).
 
 ### ROS integration 
 
 To integrate our traffic light detection pipeline we completed the following things:
 
-* Add a subscriber for /traffic_waypoing and /obstacle_waypoint
+* Publish upcoming red lights at camera frequency.
 
 ```
-waypoint_updater 37
+if self.state != state:
+    self.state_count = 0
+    self.state = state
+elif self.state_count >= STATE_COUNT_THRESHOLD:
+    self.last_state = self.state
+    light_wp = light_wp if state == TrafficLight.RED else -1
+    self.last_wp = light_wp
+    self.upcoming_red_light_pub.publish(Int32(light_wp))
+else:
+    self.upcoming_red_light_pub.publish(Int32(self.last_wp))
+self.state_count += 1
 ```
 
-* Implement a callback for /traffic_waypoint message and /obstacle_waypoint message
+STATE_COUNT_THRESHOLD is set to 3.
 
-
-```
-waypoint_updater 136&140
-```
-
-* Add a function for detection of the closest visible traffic light (if one exists)
+* Check the distance from the car to closest light.
 
 ```
-tl_detector 111
+if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
+    state = self.get_light_state(closest_light)  # approaching a light, try to determine its state
+    rospy.loginfo("approaching %s traffic light %f ahead", state, closest_light_distance)
+    return line_wp_idx, state
 ```
-
-* Load classifier
-
-```
-tl_classifier 5
-```
-
-* Implement traffic light color prediction
-
-```
-tl_classifier 18
-```
-
 
 ### Testing
 
