@@ -104,7 +104,7 @@ class WaypointUpdater(object):
 	if farthest_idx > N-1:
 		farthest_idx = N-1
 		recycle = True
-		recycle_len = closest_idx+LOOKAHEAD-N
+		recycle_len = closest_idx+LOOKAHEAD_WPS-N
 	
         base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
 	if recycle == True:
