@@ -207,10 +207,10 @@ class TLDetector(object):
         if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
             state = self.get_light_state(closest_light)  # approaching a light, try to determine its state
             rospy.loginfo("approaching %s traffic light %f ahead", state, closest_light_distance)
-		if state == TrafficLight.RED:
-            		return line_wp_idx, state
-	    	else:
-			return -1,TrafficLight.UNKNOWN
+	    if state == TrafficLight.RED:
+            	return line_wp_idx, state
+	    else:
+		return -1,TrafficLight.UNKNOWN
         else: # far away from light, hence state is don't care.
             return -1, TrafficLight.UNKNOWN
 
