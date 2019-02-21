@@ -59,6 +59,8 @@ if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
     return line_wp_idx, state
 ```
 
+LIGHT_DISTANCE_THRESHOLD is set to 60.
+
 ### Testing
 
 We tested our module in both the simulator and on a real-world video data and found it to be highly accurate.
