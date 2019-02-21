@@ -18,6 +18,8 @@ This readme explains the installation and usage steps.
 
 Documentation for the implemented Traffic Light Detection and Classification methods can be found [here](/TLD.md).
 
+Documentation for the implemented Waypoint Updater methods can be found [here](/WaypointUpdater.md).
+
 ## Installation
 
 Please use **one** of the two installation options, either native **or** docker installation.
