@@ -16,7 +16,7 @@ possible next steps...
 
 SSD network needs an input image and ground truth boxes for each object for training. It evaluates default boxes of different aspect ratios at each location in several feature maps with different scales and predicts the shape offsets and the confidence for all classes in boxes.
 
-![alt text](https://github.com/AShpilman/autonomous_ros/blob/master/imgs/SSD2.jpg)
+![alt text](https://github.com/AShpilman/autonomous_ros/blob/master/imgs/SSD2.png)
 
 SSD network model adds several feature layers to the end of a base network, which predict the offsets to default boxes of different scales and aspect ratios and their associated confidences.
 
