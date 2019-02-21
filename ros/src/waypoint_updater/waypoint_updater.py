@@ -98,7 +98,19 @@ class WaypointUpdater(object):
 
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
+	N = len(self.base_waypoints.waypoints)
+	recycle = False
+	recycle_len = 0
+	if farthest_idx > N-1:
+		farthest_idx = N-1
+		recycle = True
+		recycle_len = closest_idx+LOOKAHEAD-N
+	
         base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
+	if recycle == True:
+		recycle_points = self.base_waypoints.waypoints[0:recycle_len]
+		for i in recycle_points:
+			base_waypoints.append(i)
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints

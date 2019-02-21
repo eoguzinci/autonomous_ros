@@ -6,7 +6,7 @@ from keras import backend as K
 from keras.models import load_model
 from keras.preprocessing import image
 from keras.optimizers import Adam
-from imageio import imread
+#from imageio import imread
 import numpy as np
 from matplotlib import pyplot as plt
 import tensorflow as tf
