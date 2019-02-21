@@ -14,6 +14,8 @@ from models.keras_ssd7 import build_model
 from keras_loss_function.keras_ssd_loss import SSDLoss
 from ssd_encoder_decoder.ssd_output_decoder import decode_detections, decode_detections_fast
 
+import cv2
+
 class TLClassifier(object):
     def __init__(self, on_sim):
         ## to force CPU mode
@@ -84,7 +86,9 @@ class TLClassifier(object):
 
         """
         input_images = []
-        input_images.append(img)
+	b,g,r = cv2.split(img)
+	rbg_img = cv2.merge([r,g,b])
+        input_images.append(rbg_img)
         input_images = np.array(input_images)
 
         with graph.as_default():
