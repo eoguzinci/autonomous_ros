@@ -35,15 +35,15 @@ Model trained quite well:
 
 This picture shows the output of the model on sample image:
 
-<img src="/imgs/ssd7_low_conf_red_light_output.png" width="800">
+<img src="/imgs/ssd7_low_conf_red_light_output.png" width="600">
 
 We then filter bounding boxes by confidence threshold to detect green:
 
-<img src="/imgs/ssd7_green_light_output.png" width="800">
+<img src="/imgs/ssd7_green_light_output.png" width="600">
 
 or, more importantly, red lights:
 
-<img src="/imgs/ssd7_red_light_output.png" width="800">
+<img src="/imgs/ssd7_red_light_output.png" width="600">
 
 ### ROS integration
 
