@@ -15,7 +15,7 @@ SSD network needs an input image and ground truth boxes for each object for trai
 
 SSD network model adds several feature layers to the end of a base network, which predict the offsets to default boxes of different scales and aspect ratios and their associated confidences.
 
-*Images are from the [original paper](https://arxiv.org/pdf/1512.02325.pdf)*
+*Images are from the [original paper](https://arxiv.org/pdf/1512.02325.pdf)*.
 
 ### Implementation and training
 
@@ -23,21 +23,21 @@ First, we had to port SSD keras implementation from Python3 to Python2.
 
 We then trained the network on Lara and Bosh traffic light datasets.
 
-* [Lara Traffic Lights Recognition dataset](http://www.lara.prd.fr/benchmarks/trafficlightsrecognition) include 11 179 640x480 frames
+* [Lara Traffic Lights Recognition dataset](http://www.lara.prd.fr/benchmarks/trafficlightsrecognition) includes 11 179 640x480 frames
 * [Bosch Small Traffic Lights Dataset](https://hci.iwr.uni-heidelberg.de/node/6132) consists of 1342 images at a resolution 1280x720 pixels and contains about 24000 annotated traffic lights.
 
-We downsampled all images to 600 by 800 pixels and trained the network for 14 epochs using Adam optimizer with learning rate of 0.001. Model is saved to file 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'.
+We downsampled all images to 600 by 800 pixels and trained the network for 14 epochs using Adam optimizer with learning rate of 0.001. Model is saved to 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'.
 
 ### ROS integration
 
-To integrate our traffic light detection pipeline we completed the following things:
+To integrate our traffic light detection pipeline we perform the following steps:
 
-* Load model.
+* Load the model.
 
-'''
+```
 weights_path = 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'
 self.model.load_weights(weights_path, by_name=True)
-'''
+```
 
 
 * Use model to classify red lights from the incoming images. 
