@@ -20,6 +20,8 @@ Documentation for the implemented Traffic Light Detection and Classification met
 
 Documentation for the implemented Waypoint Updater methods can be found [here](/WaypointUpdater.md).
 
+Documentation for the implemented Drive-by-wire method can be found [here](DBW.md).
+
 ## Installation
 
 Please use **one** of the two installation options, either native **or** docker installation.
