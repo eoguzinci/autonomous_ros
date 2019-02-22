@@ -1,6 +1,6 @@
 # Drive-by-wire node
 
-This document detail our implementation of drive-by-wire system (DBW).
+This document detail our implementation of the drive-by-wire system (DBW).
 
 After the waypoints are published in [Waypoint Updater node](WaypointUpdater.md) we then have to control the vehicle by passing throttle, brake and steering commands. These commands are published at 50Hz. If the commands are published significantly less frequent than 50Hz , he system interprets it as a computer failure and passes control to the driver.
 
