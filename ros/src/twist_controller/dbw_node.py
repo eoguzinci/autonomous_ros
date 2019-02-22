@@ -46,6 +46,7 @@ class DBWNode(object):
         max_lat_accel = rospy.get_param('~max_lat_accel', 3.)
         max_steer_angle = rospy.get_param('~max_steer_angle', 8.)
 
+        # Publishers
         self.steer_pub = rospy.Publisher('/vehicle/steering_cmd',
                                          SteeringCmd, queue_size=1)
         self.throttle_pub = rospy.Publisher('/vehicle/throttle_cmd',
@@ -67,6 +68,7 @@ class DBWNode(object):
                                     max_steer_angle=max_steer_angle)
 
         # TODO: Subscribe to all the topics you need to
+        # Subscribers
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.twist_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.velocity_cb)
@@ -92,6 +94,9 @@ class DBWNode(object):
             rate.sleep()
 
     def dbw_enabled_cb(self, msg):
+        # # Reset the drive by wire when the camera switched on again
+        # if dbw_enabled:
+        #     self.controller.reset()
         self.dbw_enabled = msg.data
 
     def twist_cb(self, msg):

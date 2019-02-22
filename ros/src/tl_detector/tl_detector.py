@@ -14,11 +14,14 @@ import cv2
 import yaml
 
 STATE_COUNT_THRESHOLD = 3 # how many times light state must be stable before publishing.
-LIGHT_DISTANCE_THRESHOLD = 60 # at how many meters to light waypoint we start checking light state.
+LIGHT_DISTANCE_THRESHOLD = 30 # at how many meters to light waypoint we start checking light state.
 
 class TLDetector(object):
     def __init__(self):
         rospy.init_node('tl_detector')
+
+        self.on_simulator = rospy.get_param('~on_simulator')
+        self.use_ground_truth = False
 
         self.pose = None
         self.waypoints = None
@@ -48,7 +51,7 @@ class TLDetector(object):
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
 
         self.bridge = CvBridge()
-        self.light_classifier = TLClassifier()
+        self.light_classifier = TLClassifier(self.on_simulator)
         self.listener = tf.TransformListener()
 
         self.state = TrafficLight.UNKNOWN
@@ -134,7 +137,7 @@ class TLDetector(object):
 
         """
         # For testing, just return the light state
-        return light.state
+        # return light.state
 
         # if(not self.has_image):
         #     self.prev_light_loc = None
@@ -144,7 +147,26 @@ class TLDetector(object):
 
         # #Get classification
         # return self.light_classifier.get_classification(cv_image)
-        
+
+        if self.use_ground_truth:
+            rospy.loginfo("debugging, using ground truth")
+            return light.state
+
+
+        if (not self.has_image):
+            # rospy.loginfo("no image info!")
+            self.prev_light_loc = None
+            return TrafficLight.RED
+
+        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+
+        ##Get classification
+        # return self.light_classifier.get_classification(cv_image)
+
+        pred_state = self.light_classifier.get_classification(cv_image)
+        rospy.loginfo("SSD network says: %s (wright answer is %s)", pred_state, light.state)
+        return pred_state
+
     def euclidian_distance(self, position1, position2):
         x, y, z = position1.x - position2.x, position1.y - position2.y, position1.z - position2.z
         return math.sqrt(x*x + y*y + z*z)
@@ -185,7 +207,10 @@ class TLDetector(object):
         if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
             state = self.get_light_state(closest_light)  # approaching a light, try to determine its state
             rospy.loginfo("approaching %s traffic light %f ahead", state, closest_light_distance)
-            return line_wp_idx, state
+	    if state == TrafficLight.RED:
+            	return line_wp_idx, state
+	    else:
+		return -1,TrafficLight.UNKNOWN
         else: # far away from light, hence state is don't care.
             return -1, TrafficLight.UNKNOWN
 

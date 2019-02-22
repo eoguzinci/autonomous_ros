@@ -59,7 +59,7 @@ class Controller(object):
         brake = 0 
         if linear_vel == 0 and current_vel < 0.1:   
             throttle = 0
-            brake = 400 # Nm - to hold the car in place if we are stopped at a light. Acceleration -1m/s^2
+            brake = 700 # Nm - to hold the car in place if we are stopped at a light. Acceleration -1m/s^2
 
         elif throttle < .1 and vel_error < 0:
             throttle = 0 
@@ -67,4 +67,7 @@ class Controller(object):
             brake = abs(decel)* (self.vehicle_mass + self.fuel_capacity * GAS_DENSITY)*self.wheel_radius # Torque Nm
 
         return throttle, brake, steering
+
+    def reset(self):
+        self.throttle_controller.reset()
     
