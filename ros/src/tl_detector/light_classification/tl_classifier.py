@@ -87,8 +87,11 @@ class TLClassifier(object):
         """
         input_images = []
 	b,g,r = cv2.split(img)
-	rbg_img = cv2.merge([r,g,b])
-        input_images.append(rbg_img)
+	rgb_img = cv2.merge([r,g,b])
+
+	resized = cv2.resize(rgb_img, (self.img_width, self.img_height))
+	resized.reshape((1,self.img_height, self.img_width, self.img_channels))
+        input_images.append(resized)
         input_images = np.array(input_images)
 
         with graph.as_default():
