@@ -206,6 +206,7 @@ class TLDetector(object):
         # check the distance from car to closest_light
         if line_wp_idx == None:
             return -1,TrafficLight.UNKNOWN
+
         closest_light_distance = self.euclidian_distance(self.pose.pose.position, self.waypoints.waypoints[line_wp_idx].pose.pose.position)        
         
         if closest_light and closest_light_distance < LIGHT_DISTANCE_THRESHOLD:
