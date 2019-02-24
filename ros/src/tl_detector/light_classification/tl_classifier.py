@@ -117,7 +117,13 @@ class TLClassifier(object):
         top3s = np.nan_to_num([top3_green_avg, top3_red_avg, top3_yellow_avg])
         best_avg = np.argmax(top3s) + 1
 
-        if best_avg == 2:
-            return TrafficLight.RED
-
-        return TrafficLight.UNKNOWN
+        if best_avg == 1:
+            return TrafficLight.GREEN
+        else: 
+            if best_avg == 2:
+                return TrafficLight.RED
+            else:
+                if best_avg == 3:
+                    return TrafficLight.YELLOW
+                else:
+                    return TrafficLight.UNKNOWN
