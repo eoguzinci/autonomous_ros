@@ -14,7 +14,7 @@ import cv2
 import yaml
 
 STATE_COUNT_THRESHOLD = 3 # how many times light state must be stable before publishing.
-LIGHT_DISTANCE_THRESHOLD = 30 # at how many meters to light waypoint we start checking light state.
+LIGHT_DISTANCE_THRESHOLD = 50 # at how many meters to light waypoint we start checking light state.
 
 class TLDetector(object):
     def __init__(self):
