@@ -101,8 +101,8 @@ roslaunch launch/site.launch
 If you are using the Udacity workspace environment, follow these steps:
 
 ```
-apt-get update
 git clone https://github.com/eoguzinci/autonomous_ros
+apt-get update
 cd autonomous_ros
 pip install -r requirements.txt
 apt-get install ros-kinetic-dbw-mkz
@@ -111,6 +111,13 @@ cd ros
 catkin_make
 source devel/setup.sh
 roslaunch launch/styx.launch
+```
+
+or:
+
+```
+git clone https://github.com/eoguzinci/autonomous_ros
+./workspace.sh
 ```
 
 *Note* This project might not run as intended on the Udacity workspace environment since the hardware available for the workspace somewhat lacks in computational power.
