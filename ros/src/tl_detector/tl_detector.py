@@ -13,8 +13,10 @@ import tf
 import cv2
 import yaml
 
+
 STATE_COUNT_THRESHOLD = 2 # how many times light state must be stable before publishing.
 CLASSIFY_IMAGE_DIVIDER = 10 # only every n-th image received is classified
+
 LIGHT_DISTANCE_THRESHOLD = 50 # at how many meters to light waypoint we start checking light state.
 
 class TLDetector(object):
