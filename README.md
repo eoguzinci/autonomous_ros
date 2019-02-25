@@ -118,6 +118,7 @@ or:
 ```
 git clone https://github.com/eoguzinci/autonomous_ros
 cd autonomous_ros
+chmod +x workspace.sh
 ./workspace.sh
 ```
 
