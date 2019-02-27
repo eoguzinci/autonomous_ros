@@ -42,7 +42,7 @@ class Controller(object):
         current_vel = self.vel_lpf.filt(current_vel)
         # rospy.logwarn("Angular vel: {0}".format(angular_vel)) 
         # rospy.logwarn("Target velocity: {0}".format(lienar_vel))
-        # rospy.logwarn("Target angular vel: {0}\n".format(angular_vel))
+
         # rospy.logwarn("Current velocity: {0}".format(current_vel))
         # rospy.logwarn("Filtered velocity: {0}".format(self.vel_lpf.get()))
 
@@ -57,7 +57,7 @@ class Controller(object):
 
         throttle = self.throttle_controller.step(vel_error, sample_time)
         brake = 0 
-        if linear_vel == 0 and current_vel < 0.1:   
+        if linear_vel == 0 and current_vel < 0.01:   
             throttle = 0
             brake = 700 # Nm - to hold the car in place if we are stopped at a light. Acceleration -1m/s^2
 
@@ -66,6 +66,8 @@ class Controller(object):
             decel = max(vel_error, self.decel_limit)    
             brake = abs(decel)* (self.vehicle_mass + self.fuel_capacity * GAS_DENSITY)*self.wheel_radius # Torque Nm
 
+	#steering = steering*1.5
+	steering = min(steering*self.vehicle_mass/1000.0, 8.0)
         return throttle, brake, steering
 
     def reset(self):
