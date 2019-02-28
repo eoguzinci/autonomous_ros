@@ -59,11 +59,12 @@ class TLClassifier(object):
                                  subtract_mean=intensity_mean,
                                  divide_by_stddev=intensity_range)
 
+
         weights_path = 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'
         if not on_sim:
-            #TODO update this
-            weights_path = 'ssd7_epoch-14_loss-1.0911_val_loss-0.5348.h5'
+            weights_path = 'ssd7_4_epoch-18_loss-2.8798_val_loss-2.7147.h5'
 
+        rospy.loginfo("Loading SSD: %s", weights_path)
         self.model.load_weights(weights_path, by_name=True)
 
         global graph
@@ -98,7 +99,7 @@ class TLClassifier(object):
             y_pred = self.model.predict(input_images)
 
         y_pred_decoded = decode_detections(y_pred,
-                                           confidence_thresh=0.5,
+                                           confidence_thresh=0.2,
                                            iou_threshold=0.1,
                                            top_k=200,
                                            normalize_coords=self.normalize_coords,
